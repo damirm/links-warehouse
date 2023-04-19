@@ -6,7 +6,7 @@ RUN cd /app && make compile
 FROM alpine
 WORKDIR /app
 
-COPY ./internal/server/postgres/migrations /app/migrations
+COPY ./internal/postgres/migrations /app/migrations
 COPY --from=builder /app/out/links-warehouse /app/links-warehouse
 
 CMD /app/links-warehouse \
