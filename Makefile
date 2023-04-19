@@ -4,7 +4,7 @@ MIGRATIONS_DIR := $(shell pwd)/internal/postgres/migrations
 .PHONY: test clean sqlc compile docker-build migration
 
 sqlc:
-	docker run --rm -v $(pwd):/src -w /src kjconroy/sqlc generate
+	docker run --rm -v $(shell pwd):/src -w /src kjconroy/sqlc generate
 
 test:
 	go test -v -race -cover ./...

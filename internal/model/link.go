@@ -6,7 +6,7 @@ import (
 )
 
 type Link struct {
-	URL           url.URL
+	URL           *url.URL
 	Title         string
 	Tags          []string
 	CommentsCount int64

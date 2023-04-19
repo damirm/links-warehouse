@@ -6,8 +6,8 @@ import (
 	"github.com/damirm/links-warehouse/internal/model"
 )
 
-type Migrator interface {
-	Migrate(context.Context) error
+type TranscationManager interface {
+	Transaction(ctx context.Context, fn func(context.Context, Storage) error) error
 }
 
 type Storage interface {
