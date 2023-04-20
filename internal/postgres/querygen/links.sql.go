@@ -20,39 +20,23 @@ func (q *Queries) DeleteQueuedUrl(ctx context.Context, url string) error {
 
 const dequeueUrl = `-- name: DequeueUrl :one
 with candidate as (
-    select added_at, url, picked from links_queue
-    where picked is false
+    select added_at, url, picked_at from links_queue
+    where picked_at is null
     order by added_at
     limit 1
     for update skip locked
 )
 update links_queue as q
-set picked = true
+set picked_at = now()
 from candidate
 where q.added_at = candidate.added_at and q.url = candidate.url
-returning candidate.added_at, candidate.url, candidate.picked, q.added_at, q.url, q.picked
+returning q.added_at, q.url, q.picked_at
 `
 
-type DequeueUrlRow struct {
-	AddedAt   time.Time
-	Url       string
-	Picked    bool
-	AddedAt_2 time.Time
-	Url_2     string
-	Picked_2  bool
-}
-
-func (q *Queries) DequeueUrl(ctx context.Context) (DequeueUrlRow, error) {
+func (q *Queries) DequeueUrl(ctx context.Context) (LinksQueue, error) {
 	row := q.db.QueryRowContext(ctx, dequeueUrl)
-	var i DequeueUrlRow
-	err := row.Scan(
-		&i.AddedAt,
-		&i.Url,
-		&i.Picked,
-		&i.AddedAt_2,
-		&i.Url_2,
-		&i.Picked_2,
-	)
+	var i LinksQueue
+	err := row.Scan(&i.AddedAt, &i.Url, &i.PickedAt)
 	return i, err
 }
 

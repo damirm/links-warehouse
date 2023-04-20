@@ -3,6 +3,7 @@
 package querygen
 
 import (
+	"database/sql"
 	"encoding/json"
 	"time"
 )
@@ -21,9 +22,9 @@ type Link struct {
 }
 
 type LinksQueue struct {
-	AddedAt time.Time
-	Url     string
-	Picked  bool
+	AddedAt  time.Time
+	Url      string
+	PickedAt sql.NullTime
 }
 
 type TelegramUser struct {

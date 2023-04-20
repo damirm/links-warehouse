@@ -13,16 +13,16 @@ values ($1);
 -- name: DequeueUrl :one
 with candidate as (
     select * from links_queue
-    where picked is false
+    where picked_at is null
     order by added_at
     limit 1
     for update skip locked
 )
 update links_queue as q
-set picked = true
+set picked_at = now()
 from candidate
 where q.added_at = candidate.added_at and q.url = candidate.url
-returning *;
+returning q.*;
 
 -- name: DeleteQueuedUrl :exec
 delete from links_queue where url = $1;

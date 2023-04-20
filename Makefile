@@ -6,7 +6,7 @@ MIGRATIONS_DIR := $(shell pwd)/internal/postgres/migrations
 sqlc:
 	docker run --rm -v $(shell pwd):/src -w /src kjconroy/sqlc generate
 
-test:
+test: sqlc
 	go test -v -race -cover ./...
 
 gh-action-tests:
@@ -15,7 +15,7 @@ gh-action-tests:
 clean:
 	rm -rf $(OUT_DIR)/*
 
-compile:
+compile: sqlc
 	./scripts/build.sh ./cmd/warehouse ./out/links-warehouse
 
 docker-build:

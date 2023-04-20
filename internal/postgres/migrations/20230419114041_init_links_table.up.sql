@@ -14,8 +14,8 @@ create table "links" (
 create table "links_queue" (
     "added_at" timestamp default(now()),
     "url" varchar not null,
-    "picked" boolean not null default(false),
+    "picked_at" timestamp,
     primary key ("added_at", "url")
 );
 create index links_queue_url_idx on links_queue (url);
-create index links_queue_added_at_idx on links_queue (added_at) where picked is false;
+create index links_queue_added_at_idx on links_queue (added_at, picked_at);
