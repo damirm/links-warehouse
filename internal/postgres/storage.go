@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"net/url"
 
 	"github.com/damirm/links-warehouse/internal/model"
 
@@ -100,6 +101,18 @@ func (s *Storage) Transaction(ctx context.Context, fn func(context.Context, stor
 }
 
 func (s *Storage) SaveLink(ctx context.Context, link model.Link) error {
-	params := createLinkParams(link)
-	return s.queries.CreateLink(ctx, params)
+	params := insertLinkParams(link)
+	return s.queries.InsertLink(ctx, params)
+}
+
+func (s *Storage) EnqueueURL(ctx context.Context, u *url.URL) error {
+	return s.queries.EnqueueUrl(ctx, u.String())
+}
+
+func (s *Storage) DequeueURL(ctx context.Context) (*url.URL, error) {
+	res, err := s.queries.DequeueUrl(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return url.Parse(res.Url)
 }

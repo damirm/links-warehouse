@@ -9,6 +9,9 @@ sqlc:
 test:
 	go test -v -race -cover ./...
 
+gh-action-tests:
+	act -v
+
 clean:
 	rm -rf $(OUT_DIR)/*
 

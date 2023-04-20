@@ -21,7 +21,9 @@ type Link struct {
 }
 
 type LinksQueue struct {
-	Url string
+	AddedAt time.Time
+	Url     string
+	Picked  bool
 }
 
 type TelegramUser struct {

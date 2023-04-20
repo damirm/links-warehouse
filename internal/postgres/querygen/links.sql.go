@@ -9,13 +9,70 @@ import (
 	"time"
 )
 
-const createLink = `-- name: CreateLink :exec
+const deleteQueuedUrl = `-- name: DeleteQueuedUrl :exec
+delete from links_queue where url = $1
+`
+
+func (q *Queries) DeleteQueuedUrl(ctx context.Context, url string) error {
+	_, err := q.db.ExecContext(ctx, deleteQueuedUrl, url)
+	return err
+}
+
+const dequeueUrl = `-- name: DequeueUrl :one
+with candidate as (
+    select added_at, url, picked from links_queue
+    where picked is false
+    order by added_at
+    limit 1
+    for update skip locked
+)
+update links_queue as q
+set picked = true
+from candidate
+where q.added_at = candidate.added_at and q.url = candidate.url
+returning candidate.added_at, candidate.url, candidate.picked, q.added_at, q.url, q.picked
+`
+
+type DequeueUrlRow struct {
+	AddedAt   time.Time
+	Url       string
+	Picked    bool
+	AddedAt_2 time.Time
+	Url_2     string
+	Picked_2  bool
+}
+
+func (q *Queries) DequeueUrl(ctx context.Context) (DequeueUrlRow, error) {
+	row := q.db.QueryRowContext(ctx, dequeueUrl)
+	var i DequeueUrlRow
+	err := row.Scan(
+		&i.AddedAt,
+		&i.Url,
+		&i.Picked,
+		&i.AddedAt_2,
+		&i.Url_2,
+		&i.Picked_2,
+	)
+	return i, err
+}
+
+const enqueueUrl = `-- name: EnqueueUrl :exec
+insert into links_queue (url)
+values ($1)
+`
+
+func (q *Queries) EnqueueUrl(ctx context.Context, url string) error {
+	_, err := q.db.ExecContext(ctx, enqueueUrl, url)
+	return err
+}
+
+const insertLink = `-- name: InsertLink :exec
 insert into links
        (url, title, tags, comments_count, views_count, rating, published_at, author, complexity, status)
 values ($1,  $2,    $3,   $4,             $5,          $6,     $7,           $8,     $9,         $10)
 `
 
-type CreateLinkParams struct {
+type InsertLinkParams struct {
 	Url           string
 	Title         string
 	Tags          json.RawMessage
@@ -28,8 +85,8 @@ type CreateLinkParams struct {
 	Status        int16
 }
 
-func (q *Queries) CreateLink(ctx context.Context, arg CreateLinkParams) error {
-	_, err := q.db.ExecContext(ctx, createLink,
+func (q *Queries) InsertLink(ctx context.Context, arg InsertLinkParams) error {
+	_, err := q.db.ExecContext(ctx, insertLink,
 		arg.Url,
 		arg.Title,
 		arg.Tags,
@@ -41,5 +98,14 @@ func (q *Queries) CreateLink(ctx context.Context, arg CreateLinkParams) error {
 		arg.Complexity,
 		arg.Status,
 	)
+	return err
+}
+
+const updateLink = `-- name: UpdateLink :exec
+update links set status = $1
+`
+
+func (q *Queries) UpdateLink(ctx context.Context, status int16) error {
+	_, err := q.db.ExecContext(ctx, updateLink, status)
 	return err
 }
