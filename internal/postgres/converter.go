@@ -7,7 +7,7 @@ import (
 	"github.com/damirm/links-warehouse/internal/postgres/querygen"
 )
 
-func insertLinkParams(link model.Link) querygen.InsertLinkParams {
+func insertLinkParams(link *model.Link) querygen.InsertLinkParams {
 	return querygen.InsertLinkParams{
 		Url:           link.URL.String(),
 		Title:         link.Title,

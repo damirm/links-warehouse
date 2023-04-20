@@ -100,7 +100,7 @@ func (s *Storage) Transaction(ctx context.Context, fn func(context.Context, stor
 	return tx.Commit()
 }
 
-func (s *Storage) SaveLink(ctx context.Context, link model.Link) error {
+func (s *Storage) SaveLink(ctx context.Context, link *model.Link) error {
 	params := insertLinkParams(link)
 	return s.queries.InsertLink(ctx, params)
 }
@@ -115,4 +115,8 @@ func (s *Storage) DequeueURL(ctx context.Context) (*url.URL, error) {
 		return nil, err
 	}
 	return url.Parse(res.Url)
+}
+
+func (s *Storage) DeleteProcessedURL(ctx context.Context, u *url.URL) error {
+	return s.queries.DeleteQueuedUrl(ctx, u.String())
 }

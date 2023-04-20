@@ -32,7 +32,7 @@ func TestRunJobs(t *testing.T) {
 		done <- struct{}{}
 	}()
 
-	go worker.StartAndJoin()
+	worker.Start()
 
 	select {
 	case <-time.After(5 * time.Second):

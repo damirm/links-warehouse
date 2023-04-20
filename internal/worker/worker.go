@@ -1,7 +1,7 @@
 package worker
 
 import (
-	"fmt"
+	"log"
 	"sync"
 )
 
@@ -31,7 +31,7 @@ func NewWorker(config *Config) *Worker {
 	}
 }
 
-func (w *Worker) StartAndJoin() {
+func (w *Worker) Start() {
 	w.start.Do(func() {
 		for i := 0; i < int(w.config.WorkerCount); i++ {
 			go func(n int) {
@@ -41,8 +41,6 @@ func (w *Worker) StartAndJoin() {
 
 		w.started = true
 	})
-
-	w.Join()
 }
 
 func (w *Worker) Run(job Job) {
@@ -61,21 +59,23 @@ func (w *Worker) Stop() {
 
 // TODO: Use logger instead.
 func (w *Worker) work(n int) {
-	fmt.Printf("starting worker %d, waiting for tasks...\n", n)
+	log.Printf("starting worker %d, waiting for tasks", n)
 
 	for {
 		select {
 		case job, ok := <-w.jobs:
 			if !ok {
-				fmt.Printf("jobs channel closed, stopping worker %d...\n", n)
+				log.Printf("jobs channel closed, stopping worker %d", n)
 				return
 			}
+			log.Printf("worker %d picked a job", n)
 			err := job()
 			if err != nil {
-				fmt.Printf("job failed: %v\n", err)
+				log.Printf("job failed: %v", err)
 			}
+			log.Printf("worker %d finished job execution", n)
 		case <-w.quit:
-			fmt.Printf("stopping worker %d...\n", n)
+			log.Printf("stopping worker %d", n)
 			return
 		}
 	}
