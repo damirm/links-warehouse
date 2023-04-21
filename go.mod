@@ -8,6 +8,7 @@ require (
 	github.com/golang-migrate/migrate/v4 v4.15.2
 	github.com/lib/pq v1.10.8
 	github.com/stretchr/testify v1.8.2
+	github.com/tabbed/pqtype v0.1.1
 	github.com/testcontainers/testcontainers-go v0.19.0
 )
 

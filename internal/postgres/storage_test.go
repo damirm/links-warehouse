@@ -21,7 +21,7 @@ func TestSaveLink(t *testing.T) {
 	testURL, err := url.Parse("https://google.com")
 	require.NoError(t, err)
 
-	testLink := model.Link{
+	testLink := &model.Link{
 		URL: testURL,
 	}
 

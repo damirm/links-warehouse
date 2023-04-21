@@ -17,7 +17,7 @@ import (
 func TestLinkProcesor(t *testing.T) {
 	s := storage.NewInMemoryStorage()
 	w := worker.NewWorker(&worker.Config{WorkerCount: 10})
-	// TODO: Better to use mocked fetcher.
+	// TODO: Use mocked fetcher instead of real http fetcher.
 	f := &fetcher.HttpFetcher{}
 	p := &parser.HabrParser{}
 	lp := processor.NewLinkProcessor(s, w, f, p)
