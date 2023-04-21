@@ -16,6 +16,7 @@ type Worker struct {
 	config  *Config
 	quit    chan struct{}
 	stop    sync.Once
+	stopped bool
 	start   sync.Once
 	started bool
 	jobs    chan Job
@@ -44,7 +45,9 @@ func (w *Worker) Start() {
 }
 
 func (w *Worker) Run(job Job) {
-	w.jobs <- job
+	if !w.stopped {
+		w.jobs <- job
+	}
 }
 
 func (w *Worker) Join() {
@@ -53,11 +56,13 @@ func (w *Worker) Join() {
 
 func (w *Worker) Stop() {
 	w.stop.Do(func() {
+		w.stopped = true
+
 		close(w.quit)
+		close(w.jobs)
 	})
 }
 
-// TODO: Use logger instead.
 func (w *Worker) work(n int) {
 	log.Printf("starting worker %d, waiting for tasks", n)
 

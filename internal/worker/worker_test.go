@@ -39,4 +39,7 @@ func TestRunJobs(t *testing.T) {
 		t.Error("job has not been called within 5 seconds")
 	case <-done:
 	}
+
+	worker.Stop()
+	worker.Join()
 }

@@ -125,8 +125,10 @@ func (p *LinkProcessor) pickBatch(size int) (res []*url.URL, err error) {
 }
 
 func (p *LinkProcessor) process(u *url.URL) error {
+	ctx := context.Background()
+
 	log.Printf("fetching url: %s", u)
-	body, err := p.fetcher.Fetch(u)
+	body, err := p.fetcher.Fetch(ctx, u)
 	if err != nil {
 		log.Printf("failed to fetch url: %v", err)
 		return err
@@ -138,7 +140,6 @@ func (p *LinkProcessor) process(u *url.URL) error {
 		log.Printf("failed to parse url: %v", err)
 		return err
 	}
-	ctx := context.Background()
 
 	log.Printf("saving url: %s", u)
 	return p.storage.Transaction(ctx, func(ctx context.Context, s storage.Storage) error {
