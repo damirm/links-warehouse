@@ -22,7 +22,7 @@ func insertLinkParams(link *model.Link) querygen.InsertLinkParams {
 	}
 }
 
-func toJsonBytes(data any) []byte {
+func toJsonBytes(data interface{}) []byte {
 	res, err := json.Marshal(data)
 	if err != nil {
 		panic(err)
