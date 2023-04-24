@@ -20,7 +20,8 @@ func TestLinkProcesor(t *testing.T) {
 	// TODO: Use mocked fetcher instead of real http fetcher.
 	f := &fetcher.HttpFetcher{}
 	p := &parser.HabrParser{}
-	lp := processor.NewLinkProcessor(s, w, f, p)
+	lpc := &processor.Config{PickInterval: 1 * time.Second}
+	lp := processor.NewLinkProcessor(s, w, f, p, lpc)
 
 	w.Start()
 	lp.Start()

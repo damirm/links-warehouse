@@ -6,8 +6,8 @@ import (
 )
 
 type Config struct {
-	WorkerCount   uint
-	JobBufferSize uint
+	WorkerCount   uint `yaml:"worker-count"`
+	JobBufferSize uint `yaml:"job-buffer-size"`
 }
 
 type Job func() error

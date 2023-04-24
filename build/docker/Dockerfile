@@ -9,7 +9,4 @@ WORKDIR /app
 COPY ./internal/postgres/migrations /app/migrations
 COPY --from=builder /app/out/links-warehouse /app/links-warehouse
 
-CMD /app/links-warehouse \
-    --config /app/config.yaml \
-    --db.migrations /app/migrations/ \
-    --print-config
+CMD /app/links-warehouse -config /app/config.yaml

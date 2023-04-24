@@ -1,0 +1,23 @@
+http:
+  port: 8100
+
+telegram:
+  token: TODO
+
+database:
+  host: postgres
+  port: 5432
+  database: test
+  user: user
+  password: pass
+  schema: public
+  time-zone: UTC
+  migrations-path: /app/migrations
+  connect-timeout: 5s
+
+worker:
+  worker-count: 10
+  job-buffer-size: 10
+
+processor:
+  pick-interval: 5s

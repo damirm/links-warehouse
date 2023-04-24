@@ -12,9 +12,9 @@ type Config struct {
 	Schema         string
 	Database       string
 	Password       string
-	TimeZone       string
-	MigrationsPath string
-	ConnectTimeout time.Duration
+	TimeZone       string        `yaml:"time-zone"`
+	MigrationsPath string        `yaml:"migrations-path"`
+	ConnectTimeout time.Duration `yaml:"connect-timeout"`
 }
 
 func (c *Config) ConnString() string {

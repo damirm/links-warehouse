@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"log"
 	"net/url"
 
 	"github.com/damirm/links-warehouse/internal/model"
@@ -91,7 +92,7 @@ func (s *Storage) Transaction(ctx context.Context, fn func(context.Context, stor
 	defer func(tx *sql.Tx) {
 		err := tx.Rollback()
 		if err != nil {
-			// TODO: Log error.
+			log.Printf("failed to rollback transaction: %v", err)
 		}
 	}(tx)
 	err = fn(ctx, s.withTx(tx))

@@ -1,0 +1,26 @@
+version: "3"
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    restart: unless-stopped
+    ports:
+      - 5432
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
+      POSTGRES_DB: test
+
+  warehouse:
+    build:
+      context: ../../
+      dockerfile: ./build/docker/Dockerfile
+    depends_on:
+      - postgres
+    configs:
+      - source: warehouse
+        target: /app/config.yaml
+
+configs:
+  warehouse:
+    file: ../../configs/config.yaml

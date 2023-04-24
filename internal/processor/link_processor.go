@@ -14,11 +14,16 @@ import (
 	"github.com/damirm/links-warehouse/internal/worker"
 )
 
+type Config struct {
+	PickInterval time.Duration `yaml:"pick-interval"`
+}
+
 type LinkProcessor struct {
 	storage storage.Storage
 	worker  *worker.Worker
 	fetcher fetcher.Fetcher
 	parser  parser.Parser
+	config  *Config
 
 	start sync.Once
 	stop  sync.Once
@@ -27,13 +32,14 @@ type LinkProcessor struct {
 	processed uint64
 }
 
-func NewLinkProcessor(s storage.Storage, w *worker.Worker, f fetcher.Fetcher, p parser.Parser) *LinkProcessor {
+func NewLinkProcessor(s storage.Storage, w *worker.Worker, f fetcher.Fetcher, p parser.Parser, c *Config) *LinkProcessor {
 	quit := make(chan struct{})
 	return &LinkProcessor{
 		storage: s,
 		worker:  w,
 		fetcher: f,
 		parser:  p,
+		config:  c,
 		quit:    quit,
 	}
 }
@@ -60,10 +66,9 @@ func (p *LinkProcessor) ProcessedJobs() uint64 {
 
 func (p *LinkProcessor) watch() {
 	urls := make(chan *url.URL)
-	seconds := 1
-	ticker := time.NewTicker(time.Duration(seconds) * time.Second)
+	ticker := time.NewTicker(p.config.PickInterval)
 
-	log.Printf("start watching links queue, pick new links every %d seconds", seconds)
+	log.Printf("start watching links queue, pick new links every %d seconds", p.config.PickInterval/time.Second)
 
 	go func() {
 		for {
