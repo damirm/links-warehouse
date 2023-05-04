@@ -2,17 +2,17 @@ http:
   port: 8100
 
 telegram:
-  token: TODO
+  token: "${TELEGRAM_BOT_TOKEN}"
 
 database:
-  host: postgres
-  port: 5432
-  database: test
-  user: user
-  password: pass
+  host: ${DATABASE_HOST}
+  port: ${DATABASE_PORT}
+  database: ${DATABASE_NAME}
+  user: ${DATABASE_USER}
+  password: "${DATABASE_PASSWORD}"
   schema: public
   time-zone: UTC
-  migrations-path: /app/migrations
+  migrations-path: ${MIGRATIONS_PATH}
   connect-timeout: 5s
 
 worker:
