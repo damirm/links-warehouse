@@ -6,8 +6,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/damirm/links-warehouse/internal/model"
 	"github.com/damirm/links-warehouse/internal/parser"
+	"github.com/damirm/links-warehouse/internal/warehouse"
 	"github.com/stretchr/testify/require"
 )
 
@@ -23,7 +23,7 @@ func TestHabrParser(t *testing.T) {
 
 	publishedAt, err := time.Parse(time.RFC3339Nano, "2019-01-15T11:15:36.000Z")
 	require.NoError(t, err)
-	expected := model.Link{
+	expected := warehouse.Link{
 		URL:           u,
 		Title:         "Hello world! Or Habr in English, v1.0",
 		Tags:          []string{"Habr", "cake", "UFO"},

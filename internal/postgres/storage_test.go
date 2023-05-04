@@ -5,8 +5,8 @@ import (
 	"net/url"
 	"testing"
 
-	"github.com/damirm/links-warehouse/internal/model"
 	"github.com/damirm/links-warehouse/internal/postgres"
+	"github.com/damirm/links-warehouse/internal/warehouse"
 	"github.com/stretchr/testify/require"
 )
 
@@ -21,7 +21,7 @@ func TestSaveLink(t *testing.T) {
 	testURL, err := url.Parse("https://google.com")
 	require.NoError(t, err)
 
-	testLink := &model.Link{
+	testLink := &warehouse.Link{
 		URL: testURL,
 	}
 

@@ -1,14 +1,13 @@
-package storage
+package warehouse
 
 import (
 	"context"
 	"net/url"
-
-	"github.com/damirm/links-warehouse/internal/model"
 )
 
 type Storage interface {
-	SaveLink(context.Context, *model.Link) error
+	SaveLink(context.Context, *Link) error
+	LinkExists(context.Context, *url.URL) (bool, error)
 	EnqueueURL(context.Context, *url.URL) error
 	DequeueURL(context.Context) (*url.URL, error)
 	DeleteProcessedURL(context.Context, *url.URL) error

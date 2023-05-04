@@ -9,19 +9,20 @@ import (
 	"github.com/damirm/links-warehouse/internal/fetcher"
 	"github.com/damirm/links-warehouse/internal/parser"
 	"github.com/damirm/links-warehouse/internal/processor"
-	"github.com/damirm/links-warehouse/internal/storage"
+	"github.com/damirm/links-warehouse/internal/warehouse"
 	"github.com/damirm/links-warehouse/internal/worker"
 	"github.com/stretchr/testify/require"
 )
 
 func TestLinkProcesor(t *testing.T) {
-	s := storage.NewInMemoryStorage()
+	s := warehouse.NewInMemoryStorage()
 	w := worker.NewWorker(&worker.Config{WorkerCount: 10})
 	// TODO: Use mocked fetcher instead of real http fetcher.
 	f := &fetcher.HttpFetcher{}
 	p := &parser.HabrParser{}
 	lpc := &processor.Config{PickInterval: 1 * time.Second}
-	lp := processor.NewLinkProcessor(s, w, f, p, lpc)
+	service := warehouse.NewWarehouseService(s)
+	lp := processor.NewLinkProcessor(service, w, f, p, lpc)
 
 	w.Start()
 	lp.Start()

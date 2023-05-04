@@ -3,9 +3,9 @@ package parser
 import (
 	"net/url"
 
-	"github.com/damirm/links-warehouse/internal/model"
+	"github.com/damirm/links-warehouse/internal/warehouse"
 )
 
 type Parser interface {
-	Parse(*url.URL, string) (*model.Link, error)
+	Parse(*url.URL, string) (*warehouse.Link, error)
 }

@@ -1,4 +1,4 @@
-package model
+package warehouse
 
 import (
 	"net/url"

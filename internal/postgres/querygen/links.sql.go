@@ -85,6 +85,28 @@ func (q *Queries) InsertLink(ctx context.Context, arg InsertLinkParams) error {
 	return err
 }
 
+const selectLink = `-- name: SelectLink :one
+select url, title, tags, comments_count, views_count, rating, published_at, author, complexity, status from links where url = $1
+`
+
+func (q *Queries) SelectLink(ctx context.Context, url string) (Link, error) {
+	row := q.db.QueryRowContext(ctx, selectLink, url)
+	var i Link
+	err := row.Scan(
+		&i.Url,
+		&i.Title,
+		&i.Tags,
+		&i.CommentsCount,
+		&i.ViewsCount,
+		&i.Rating,
+		&i.PublishedAt,
+		&i.Author,
+		&i.Complexity,
+		&i.Status,
+	)
+	return i, err
+}
+
 const updateLink = `-- name: UpdateLink :exec
 update links set status = $1
 `

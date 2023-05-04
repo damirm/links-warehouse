@@ -7,10 +7,9 @@ import (
 	"log"
 	"net/url"
 
-	"github.com/damirm/links-warehouse/internal/model"
+	"github.com/damirm/links-warehouse/internal/warehouse"
 
 	"github.com/damirm/links-warehouse/internal/postgres/querygen"
-	"github.com/damirm/links-warehouse/internal/storage"
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
@@ -84,7 +83,7 @@ func (s *Storage) withTx(tx *sql.Tx) *Storage {
 	}
 }
 
-func (s *Storage) Transaction(ctx context.Context, fn func(context.Context, storage.Storage) error) error {
+func (s *Storage) Transaction(ctx context.Context, fn func(context.Context, warehouse.Storage) error) error {
 	tx, err := s.db.Begin()
 	if err != nil {
 		return err
@@ -102,7 +101,7 @@ func (s *Storage) Transaction(ctx context.Context, fn func(context.Context, stor
 	return tx.Commit()
 }
 
-func (s *Storage) SaveLink(ctx context.Context, link *model.Link) error {
+func (s *Storage) SaveLink(ctx context.Context, link *warehouse.Link) error {
 	params := insertLinkParams(link)
 	return s.queries.InsertLink(ctx, params)
 }
@@ -113,6 +112,9 @@ func (s *Storage) EnqueueURL(ctx context.Context, u *url.URL) error {
 
 func (s *Storage) DequeueURL(ctx context.Context) (*url.URL, error) {
 	res, err := s.queries.DequeueUrl(ctx)
+	if err == sql.ErrNoRows {
+		return nil, nil
+	}
 	if err != nil {
 		return nil, err
 	}
@@ -121,4 +123,15 @@ func (s *Storage) DequeueURL(ctx context.Context) (*url.URL, error) {
 
 func (s *Storage) DeleteProcessedURL(ctx context.Context, u *url.URL) error {
 	return s.queries.DeleteQueuedUrl(ctx, u.String())
+}
+
+func (s *Storage) LinkExists(ctx context.Context, u *url.URL) (bool, error) {
+	_, err := s.queries.SelectLink(ctx, u.String())
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return false, nil
+		}
+		return false, err
+	}
+	return true, nil
 }

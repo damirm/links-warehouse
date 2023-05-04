@@ -26,3 +26,6 @@ returning q.*;
 
 -- name: DeleteQueuedUrl :exec
 delete from links_queue where url = $1;
+
+-- name: SelectLink :one
+select * from links where url = $1;

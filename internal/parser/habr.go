@@ -8,12 +8,12 @@ import (
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
-	"github.com/damirm/links-warehouse/internal/model"
+	"github.com/damirm/links-warehouse/internal/warehouse"
 )
 
 type HabrParser struct{}
 
-func (p *HabrParser) Parse(u *url.URL, body string) (*model.Link, error) {
+func (p *HabrParser) Parse(u *url.URL, body string) (*warehouse.Link, error) {
 	doc, err := goquery.NewDocumentFromReader(strings.NewReader(body))
 	if err != nil {
 		return nil, err
@@ -39,7 +39,7 @@ func (p *HabrParser) Parse(u *url.URL, body string) (*model.Link, error) {
 		tags = append(tags, s.Text())
 	})
 
-	return &model.Link{
+	return &warehouse.Link{
 		URL:           u,
 		Title:         title,
 		Tags:          tags,

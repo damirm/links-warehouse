@@ -3,11 +3,11 @@ package postgres
 import (
 	"encoding/json"
 
-	"github.com/damirm/links-warehouse/internal/model"
 	"github.com/damirm/links-warehouse/internal/postgres/querygen"
+	"github.com/damirm/links-warehouse/internal/warehouse"
 )
 
-func insertLinkParams(link *model.Link) querygen.InsertLinkParams {
+func insertLinkParams(link *warehouse.Link) querygen.InsertLinkParams {
 	return querygen.InsertLinkParams{
 		Url:           link.URL.String(),
 		Title:         link.Title,

@@ -10,7 +10,7 @@ import (
 
 	"github.com/damirm/links-warehouse/internal/fetcher"
 	"github.com/damirm/links-warehouse/internal/parser"
-	"github.com/damirm/links-warehouse/internal/storage"
+	"github.com/damirm/links-warehouse/internal/warehouse"
 	"github.com/damirm/links-warehouse/internal/worker"
 )
 
@@ -19,7 +19,7 @@ type Config struct {
 }
 
 type LinkProcessor struct {
-	storage storage.Storage
+	service *warehouse.WarehouseService
 	worker  *worker.Worker
 	fetcher fetcher.Fetcher
 	parser  parser.Parser
@@ -32,10 +32,10 @@ type LinkProcessor struct {
 	processed uint64
 }
 
-func NewLinkProcessor(s storage.Storage, w *worker.Worker, f fetcher.Fetcher, p parser.Parser, c *Config) *LinkProcessor {
+func NewLinkProcessor(s *warehouse.WarehouseService, w *worker.Worker, f fetcher.Fetcher, p parser.Parser, c *Config) *LinkProcessor {
 	quit := make(chan struct{})
 	return &LinkProcessor{
-		storage: s,
+		service: s,
 		worker:  w,
 		fetcher: f,
 		parser:  p,
@@ -102,18 +102,9 @@ func (p *LinkProcessor) watch() {
 	}()
 }
 
-func (p *LinkProcessor) pick() (*url.URL, error) {
-	ctx := context.Background()
-	u, err := p.storage.DequeueURL(ctx)
-	if err != nil {
-		return nil, err
-	}
-	return u, nil
-}
-
 func (p *LinkProcessor) pickBatch(size int) (res []*url.URL, err error) {
 	for len(res) < size {
-		u, err := p.pick()
+		u, err := p.service.NextProcessingLink()
 		if err != nil {
 			log.Printf("failed to pick url: %v", err)
 			return res, err
@@ -147,19 +138,5 @@ func (p *LinkProcessor) process(u *url.URL) error {
 	}
 
 	log.Printf("saving url: %s", u)
-	return p.storage.Transaction(ctx, func(ctx context.Context, s storage.Storage) error {
-		err = p.storage.SaveLink(ctx, link)
-		if err != nil {
-			log.Printf("failed to save link: %v", err)
-			return err
-		}
-
-		err = p.storage.DeleteProcessedURL(ctx, link.URL)
-		if err != nil {
-			log.Printf("failed to save link: %v", err)
-			return err
-		}
-
-		return nil
-	})
+	return p.service.FinishLinkProcessing(ctx, link)
 }
