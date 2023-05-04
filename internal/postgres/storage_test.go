@@ -2,6 +2,7 @@ package postgres_test
 
 import (
 	"context"
+	"fmt"
 	"net/url"
 	"testing"
 
@@ -49,4 +50,24 @@ func TestEnqueueDequeueUrl(t *testing.T) {
 	if testURL.String() != nextURL.String() {
 		t.Errorf("expected %s but got %s", testURL, nextURL)
 	}
+}
+
+func TestTransaction(t *testing.T) {
+	db, err := postgres.Connect(testDatabaseConfig)
+	require.NoError(t, err)
+
+	ctx := context.Background()
+	storage, err := postgres.InitStorage(ctx, db, testDatabaseConfig)
+	require.NoError(t, err)
+
+	u, _ := url.Parse("https://google.com")
+
+	storage.Transaction(ctx, func(ctx context.Context, storage warehouse.Storage) error {
+		storage.EnqueueURL(ctx, u)
+		return fmt.Errorf("something goes wrong")
+	})
+
+	u1, err := storage.DequeueURL(ctx)
+	require.NoError(t, err)
+	require.Nil(t, u1)
 }
