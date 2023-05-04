@@ -6,10 +6,12 @@ require (
 	github.com/PuerkitoBio/goquery v1.8.1
 	github.com/docker/docker v23.0.1+incompatible
 	github.com/golang-migrate/migrate/v4 v4.15.2
+	github.com/joho/godotenv v1.5.1
 	github.com/lib/pq v1.10.8
 	github.com/stretchr/testify v1.8.2
 	github.com/tabbed/pqtype v0.1.1
 	github.com/testcontainers/testcontainers-go v0.19.0
+	gopkg.in/yaml.v3 v3.0.1
 )
 
 require (
@@ -28,7 +30,6 @@ require (
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
-	github.com/joho/godotenv v1.5.1 // indirect
 	github.com/klauspost/compress v1.13.6 // indirect
 	github.com/magiconair/properties v1.8.7 // indirect
 	github.com/moby/patternmatcher v0.5.0 // indirect
@@ -47,5 +48,4 @@ require (
 	google.golang.org/genproto v0.0.0-20220617124728-180714bec0ad // indirect
 	google.golang.org/grpc v1.47.0 // indirect
 	google.golang.org/protobuf v1.28.0 // indirect
-	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
