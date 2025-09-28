@@ -3,7 +3,6 @@ package command
 import (
 	"context"
 	"flag"
-	"io/ioutil"
 	"log"
 	"os"
 	"os/signal"
@@ -109,7 +108,7 @@ func handleSignals(cb func(os.Signal), signals ...os.Signal) {
 }
 
 func readConfig(configPath string) (*config, error) {
-	data, err := ioutil.ReadFile(configPath)
+	data, err := os.ReadFile(configPath)
 	if err != nil {
 		return nil, err
 	}

@@ -79,7 +79,7 @@ func (p *LinkProcessor) watch() {
 				ticker.Stop()
 				return
 			case <-ticker.C:
-				batch, err := p.pickBatch(10)
+				batch, err := p.pickBatch(100)
 				for _, u := range batch {
 					log.Printf("picked url: %s %v", u, err)
 					urls <- u
@@ -124,6 +124,7 @@ func (p *LinkProcessor) process(u *url.URL) error {
 	ctx := context.Background()
 
 	log.Printf("fetching url: %s", u)
+	// TODO: Properly handle errors / redirects.
 	body, err := p.fetcher.Fetch(ctx, u)
 	if err != nil {
 		log.Printf("failed to fetch url: %v", err)

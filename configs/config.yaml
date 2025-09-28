@@ -16,8 +16,8 @@ database:
   connect-timeout: 5s
 
 worker:
-  worker-count: 10
-  job-buffer-size: 10
+  worker-count: 100
+  job-buffer-size: 100
 
 processor:
   pick-interval: 5s
